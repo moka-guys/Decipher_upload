@@ -61,6 +61,7 @@ class decipher():
                 Pathogenicity = splitline[13]  # changed using dict below
                 Phenotypes = splitline[14]  # not used - phenoformID used below
                 Responsible_contact = splitline[15]
+                #print splitline[16]
                 Requested_date = parse(
                     splitline[16])
                 is_male = splitline[17]
@@ -79,21 +80,21 @@ class decipher():
                     pass
                 else:
                     #ignore if the gender is unknown. Prenatals without a gender are excluded as part of the query
-                    if is_female =="No" and is_male=="No" and is_unknown=="No" and chr != "24":
+                    if is_female == "0" and is_male == "0" and is_unknown == "0" and chr != "24":
                         pass
                     else:
                         # catch prenatal females 
                         # NB for prenatals is_male == is_female == is_unknown
-                        if is_male in ("F F","F","f"):
+                        if is_male in ("F F", "F", "f"):
                             sex="46XX"
                         # catch males
-                        elif is_male in ("M") or is_male == "Yes":
+                        elif is_male in ("M") or is_male == "-1":
                             sex = "46XY"
                             #catch female post natals
-                        elif is_female == "Yes" or is_unknown =="Yes":
+                        elif is_female == "-1" or is_unknown == "-1":
                             sex = "46XX"
                         # if unknown but on Y can say they are male
-                        elif chr =="24":
+                        elif chr == "24":
                             sex = "46XY"
                         # else raise error
                         else: 
@@ -122,8 +123,11 @@ class decipher():
     
                         # calculate the age in years subtracting DOB from date of
                         # test
-                        rdelta = relativedelta(Requested_date, DOB)
-                        Age = rdelta.years
+                        if DOB is not None:
+                            rdelta = relativedelta(Requested_date, DOB)
+                            Age = rdelta.years
+                        else:
+                            Age = ""
     
                         # set prenatal age to empty string
                         Prenatal_age = ""
