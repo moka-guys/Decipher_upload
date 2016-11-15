@@ -11,15 +11,15 @@ from dateutil.parser import parse
 class decipher():
 
     def __init__(self):
-        self.inputfile = "S:\\Genetics_Data2\\Array\\Audits and Projects\\160715 Decipher Bulk Upload\\all_db_out.txt"
+        self.inputfile = "S:\\Genetics_Data2\\Array\\Audits and Projects\\160715 Decipher Bulk Upload\\161115_db_out.txt"
         #self.inputfile = "S:\\Genetics_Data2\\Array\\Audits and Projects\\160715 Decipher Bulk Upload\\prenatal_db_out.txt"
 
-        self.outputfile = "S:\\Genetics_Data2\\Array\\Audits and Projects\\160715 Decipher Bulk Upload\\script_output\\all_bulk_upload.txt"
+        self.outputfile = "S:\\Genetics_Data2\\Array\\Audits and Projects\\160715 Decipher Bulk Upload\\script_output\\161115_bulk_upload.txt"
         #self.outputfile = "S:\\Genetics_Data2\\Array\\Audits and Projects\\160715 Decipher Bulk Upload\\script_output\\prenatal_cleaned.txt"
 
         self.mean_ratio_dict = {"x0": "-2", "x0~1": "-2", "x1": "-1",
                                 "x1~2": "-1", "x2": "0.58", "x2~3": "0.58", "x3": "0.58", "x4": "1", "x2~4": "1"}
-        self.pathogenicity = {"Abnormal result (class 5)": "Definitely pathogenic", "Abnormal result (retrospectively assigned)": "Definitely pathogenic", "Not in use: Pathogenic (retrospectively assigned)": "Definitely pathogenic", "Pathogenic, likely (retrospectively assigned)": "Probably pathogenic", "Likely to be pathogenic (class 4)": "Probably pathogenic",
+        self.pathogenicity = {"Pathogenic / abnormal result (class 5)":"Definitely pathogenic","Abnormal result (class 5)": "Definitely pathogenic", "Abnormal result (retrospectively assigned)": "Definitely pathogenic", "Not in use: Pathogenic (retrospectively assigned)": "Definitely pathogenic", "Pathogenic, likely (retrospectively assigned)": "Probably pathogenic", "Likely to be pathogenic (class 4)": "Probably pathogenic",
                               "Unknown (retrospectively assigned)": "Uncertain", "Uncertain clinical significance (class 3)": "Uncertain", "Unlikely to be pathogenic (class 2)": "Likely benign", "Benign, likely (retrospectively assigned)": "Likely benign"}
 
         self.hpo_translation_file = "S:\\Genetics_Data2\\Array\\Audits and Projects\\160715 Decipher Bulk Upload\\hpo translation.txt"
@@ -137,8 +137,8 @@ class decipher():
                             #overwrite age
                             Age = "Prenatal"
                             # set all other sample types to 20 weeks
-                        elif gestation in ("Amnio", "DNA for Cyto", "Fetal Blood", "No Specimen", "Blood"):
-                            Prenatal_age = "20"
+                        elif gestation in ("Amnio", "DNA for Cyto", "Fetal Blood", "No Specimen", "Blood", "DNA"):
+                            Prenatal_age = ""
                             Age = "Prenatal"
                         # else is postnatal so has no gestation
                         elif gestation is None:
