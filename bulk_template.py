@@ -11,20 +11,22 @@ from dateutil.parser import parse
 class decipher():
 
     def __init__(self):
-        self.inputfile = "S:\\Genetics_Data2\\Array\\Audits and Projects\\160715 Decipher Bulk Upload\\161115_db_out.txt"
+        self.inputfile = "S:\\Genetics_Data2\\Array\\Audits and Projects\\160715 Decipher Bulk Upload\\BulkUpload20170302_db_out.txt"
         #self.inputfile = "S:\\Genetics_Data2\\Array\\Audits and Projects\\160715 Decipher Bulk Upload\\prenatal_db_out.txt"
 
-        self.outputfile = "S:\\Genetics_Data2\\Array\\Audits and Projects\\160715 Decipher Bulk Upload\\script_output\\161115_bulk_upload.txt"
+        self.outputfile = "S:\\Genetics_Data2\\Array\\Audits and Projects\\160715 Decipher Bulk Upload\\script_output\\20170302_bulk_upload.txt"
         #self.outputfile = "S:\\Genetics_Data2\\Array\\Audits and Projects\\160715 Decipher Bulk Upload\\script_output\\prenatal_cleaned.txt"
 
         self.mean_ratio_dict = {"x0": "-2", "x0~1": "-2", "x1": "-1",
                                 "x1~2": "-1", "x2": "0.58", "x2~3": "0.58", "x3": "0.58", "x4": "1", "x2~4": "1"}
         self.pathogenicity = {"Pathogenic / abnormal result (class 5)":"Definitely pathogenic","Abnormal result (class 5)": "Definitely pathogenic", "Abnormal result (retrospectively assigned)": "Definitely pathogenic", "Not in use: Pathogenic (retrospectively assigned)": "Definitely pathogenic", "Pathogenic, likely (retrospectively assigned)": "Probably pathogenic", "Likely to be pathogenic (class 4)": "Probably pathogenic",
                               "Unknown (retrospectively assigned)": "Uncertain", "Uncertain clinical significance (class 3)": "Uncertain", "Unlikely to be pathogenic (class 2)": "Likely benign", "Benign, likely (retrospectively assigned)": "Likely benign"}
-
+        self.pathogenicity_to_ignore=("Below array resolution", "<1Mb (targeted array,not pathogenic,not reported)","Benign (class 1)")
         self.hpo_translation_file = "S:\\Genetics_Data2\\Array\\Audits and Projects\\160715 Decipher Bulk Upload\\hpo translation.txt"
         self.hpo_dict = {}
         self.all_results = {}
+        self.openaccess="No"
+        self.resposiblecontactemail="joowook.ahn@nhs.net"
 
     def translate(self):
         # populate hpo_dict
@@ -52,7 +54,7 @@ class decipher():
                 copy_number = splitline[5]  # changed to ratio below
                 # not used - calculated using is_male/is_female
                 Chromosomal_sex = splitline[6]
-                Openaccess_consent = splitline[7]
+                Openaccess_consent = splitline[7] # changed below
                 DOB = splitline[8]
                 Note = splitline[9]
                 Mother_is = splitline[10]
@@ -60,7 +62,7 @@ class decipher():
                 Inheritance = splitline[12]
                 Pathogenicity = splitline[13]  # changed using dict below
                 Phenotypes = splitline[14]  # not used - phenoformID used below
-                Responsible_contact = splitline[15]
+                Responsible_contact = splitline[15] # changed below
                 #print splitline[16]
                 Requested_date = parse(
                     splitline[16])
@@ -75,8 +77,12 @@ class decipher():
                     gestation = splitline[21].rstrip()
                 # print gestation
                 
+                # change responsible contact
+                Responsible_contact = self.resposiblecontactemail # changed below
+                # change the open access content
+                Openaccess_consent=self.openaccess
                 #exclude aberation if has these pathogenicities
-                if Pathogenicity in ("Below array resolution", "<1Mb (targeted array,not pathogenic,not reported)"):
+                if Pathogenicity in self.pathogenicity_to_ignore:
                     pass
                 else:
                     #ignore if the gender is unknown. Prenatals without a gender are excluded as part of the query
@@ -145,10 +151,7 @@ class decipher():
                             Prenatal_age = ""
                         else:
                             raise ValueError("unknown sample type:\t" + gestation)
-    
-                        # hardcode the responsible contact
-                        Responsible_contact = "Viapath Genetics Laboratories"
-    
+        
                         # get HPO term from dict
                         if phenoformID in self.hpo_dict:
                             hpo_term = self.hpo_dict[phenoformID]
@@ -162,6 +165,11 @@ class decipher():
                         else:
                             raise ValueError(
                                 "unknown pathogenicity:\t" + Pathogenicity)
+                        
+                        if Mother_is == "Of unknown phenotype":
+                            Mother_is="Unknown"
+                        if Father_is =="Of unknown phenotype":
+                            Father_is="Unknown"
     
                         to_add_to_dict = [PRU, chromosome, start, end, genome_assembley, copy_number, cleaned_ratio, sex, Openaccess_consent,
                                           Age, Prenatal_age, Note, Mother_is, Father_is, Inheritance, decipher_pathogenicity, [hpo_term], Responsible_contact, Requested_date]
