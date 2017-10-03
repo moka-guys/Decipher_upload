@@ -19,7 +19,7 @@ class decipher():
 
         self.mean_ratio_dict = {"x0": "-2", "x0~1": "-2", "x1": "-1",
                                 "x1~2": "-1", "x2": "0.58", "x2~3": "0.58", "x3": "0.58", "x4": "1", "x2~4": "1"}
-        self.pathogenicity = {"Pathogenic / abnormal result (class 5)":"Definitely pathogenic","Abnormal result (class 5)": "Definitely pathogenic", "Abnormal result (retrospectively assigned)": "Definitely pathogenic", "Not in use: Pathogenic (retrospectively assigned)": "Definitely pathogenic", "Pathogenic, likely (retrospectively assigned)": "Probably pathogenic", "Likely to be pathogenic (class 4)": "Probably pathogenic",
+        self.pathogenicity = {"Pathogenic / abnormal result (class 5)":"Definitely pathogenic","Abnormal result (class 5)": "Definitely pathogenic", "Abnormal result (retrospectively assigned)": "Definitely pathogenic", "Not in use: Pathogenic (retrospectively assigned)": "Definitely pathogenic", "Pathogenic, likely (retrospectively assigned)": "Likely pathogenic", "Likely to be pathogenic (class 4)": "Likely pathogenic",
                               "Unknown (retrospectively assigned)": "Uncertain", "Uncertain clinical significance (class 3)": "Uncertain", "Unlikely to be pathogenic (class 2)": "Likely benign", "Benign, likely (retrospectively assigned)": "Likely benign"}
         self.pathogenicity_to_ignore=("Below array resolution", "<1Mb (targeted array,not pathogenic,not reported)","Benign (class 1)")
         self.hpo_translation_file = "S:\\Genetics_Data2\\Array\\Audits and Projects\\160715 Decipher Bulk Upload\\hpo translation.txt"
@@ -79,8 +79,10 @@ class decipher():
                 
                 # change responsible contact
                 Responsible_contact = self.resposiblecontactemail # changed below
+                
                 # change the open access content
                 Openaccess_consent=self.openaccess
+                
                 #exclude aberation if has these pathogenicities
                 if Pathogenicity in self.pathogenicity_to_ignore:
                     pass
@@ -112,7 +114,7 @@ class decipher():
                             DOB = datetime.strptime(splitline[8], '%d/%m/%Y')
     
                         # get chromosome_text
-                        chromosome = decipher().get_chromosome(chr)
+                        chromosome = self.get_chromosome(chr)
     
                         # set inheritance for mosaics
                         if "~" in copy_number:
@@ -124,7 +126,7 @@ class decipher():
                         chr_start_end = chromosome + ":" + start + "-" + end
     
                         # pass copy number to get_ratio
-                        cleaned_ratio = decipher().get_ratios(
+                        cleaned_ratio = self.get_ratios(
                             copy_number, is_male, is_female, chromosome)
     
                         # calculate the age in years subtracting DOB from date of
